@@ -1,0 +1,102 @@
+   (Script PDF Print)
+   
+    <?php
+    $today=date('Y-m-d');
+    $hostname = "localhost";
+    $database = "bdname";
+    $username = "root";
+    $password = "";
+    $conn = mysql_connect($hostname, $username, $password) or die(mysql_error());
+    mysql_select_db($database, $conn);
+    date_default_timezone_set('UTC');
+    require('fpdf/fpdf.php');
+    class PDF_result extends FPDF {
+    function __construct ($orientation = 'P', $unit = 'pt', $format = 'Letter', $margin = 40) {
+    $this->FPDF($orientation, $unit, $format);
+    $this->SetTopMargin($margin);
+    $this->SetLeftMargin($margin);
+    $this->SetRightMargin($margin);
+    $this->SetAutoPageBreak(true, $margin);
+    }
+    function Header () {
+    $this->Image('images/logo.png',100,15,200);
+    // $this->SetFont('Arial', 'B', 20);
+    // $this->SetFillColor(36, 96, 84);
+    // $this->SetTextColor(225);
+    // $this->Cell(0, 30, "YouHack MCQ Results", 0, 1, 'C', true);
+    }
+    function Footer()
+    {
+    //Position at 1.5 cm from bottom
+    $this->SetY(-15);
+    //Arial italic 8
+    $this->SetFont('Arial','I',8);
+    //Page number
+    $this->Cell(0,10,'Generated at karismaa Attendance',0,0,'C');
+    }
+    function Generate_Table($i, $employee_name, $project_name, $emp_designation, $status, $empdate) {
+    $this->SetFont('Arial', 'B', 12);
+    $this->SetTextColor(0);
+    // $this->SetFillColor(94, 188, z);
+    $this->SetFillColor(94, 188, 225);
+    $this->SetLineWidth(1);
+    $this->Cell(30, 25, "Sno", 'LTR', 0, 'C', true);
+    $this->Cell(120, 25, "Employee Name", 'LTR', 0, 'C', true);
+    $this->Cell(100, 25, "Project Name", 'LTR', 0, 'C', true);
+    $this->Cell(100, 25, "Designation", 'LTR', 0, 'C', true);
+    $this->Cell(100, 25, "Status", 'LTR', 0, 'C', true);
+    $this->Cell(100, 25, "Date", 'LTR', 0, 'C', true);
+    $this->SetFont('Arial', '');
+    $this->SetFillColor(238);
+    $this->SetLineWidth(0.2);
+    $fill = false;
+    }
+    function qry($qry)
+    {
+    $this->$qry=mysql_query("select * from attend where empdate >='$today' group by employee_name order by project_name",$this->$conn);
+    if($this->$qry!=false)
+    {
+    $i=1;
+    while($this->$res=mysql_fetch_array($qry))
+    {
+    $myArr=array($i,$res['employee_name'],$res['project_name'],$res['emp_designation'],$res['status'],$res['empdate']);
+    $this->$i++;
+    }
+    }
+    }
+    //for ($i = 0; $i < count($subjects); $i++) {
+    // $this->Cell(427, 20, $subjects[$i], 1, 0, 'L', $fill);
+    // $this->Cell(100, 20, $marks[$i], 1, 1, 'R', $fill);
+    // $fill = !$fill;
+    //}
+    //$this->SetX(367);
+    //$this->Cell(100, 20, "Total", 1);
+    // $this->Cell(100, 20, array_sum($marks), 1, 1, 'R');
+    }
+    $pdf = new PDF_result();
+    $pdf->AddPage();
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetY(100);
+    $pdf->Cell(100, 13, "");
+    $pdf->SetFont('Arial', 'B');
+    $pdf->Cell(250, 13, $title);
+    $pdf->SetFont('Arial', 'B');
+    $pdf->Cell(50, 13, "Date:");
+    $pdf->SetFont('Arial','');
+    $pdf->Cell(100, 13, date('F j, Y'), 0, 1);
+    $pdf->SetFont('Arial', 'I');
+    $pdf->SetX(140);
+    //$pdf->Cell(200, 15, $_POST['e-mail'], 0, 2);
+    //$pdf->Cell(200, 15, $_POST['Address'] . ',' . $_POST['City'] , 0, 2);
+    //$pdf->Cell(200, 15, $_POST['Country'], 0, 2);
+    $pdf->Ln(100);
+    $pdf->Generate_Table($i, $employee_name, $project_name, $emp_designation, $status, $empdate );
+    $pdf->Ln(50);
+    $message = "For More Information Contact us at : ";
+    $pdf->MultiCell(0, 15, $message);
+    $pdf->SetFont('Arial', 'U', 12);
+    $pdf->SetTextColor(1, 162, 232);
+    $pdf->Write(13, "support@domain.com", "support@domain.com");
+    $pdf->Output('result-.$today.pdf', 'F');
+    ?>
+

@@ -1,0 +1,51 @@
+case "itemlistperlocation":
+    $sql="select items.id as ID, typedesc as type, agents.title as manufacturer, model, ".
+         " locations.name  as Location  ".
+         " FROM items,agents,locations,itemtypes ".
+         " WHERE itemtypes.id=items.itemtypeid AND agents.id=items.manufacturerid ".
+         " AND items.locationid=locations.id order by locationid,typedesc desc;";
+    $editlnk="$scriptname?action=editlocations";
+    $graph['type']="pie";
+    $graph['colx']="Location";
+    $graph['coly']="TotalCount";
+    $graph['limit']=15;
+  break;
+  
+  
+  
+  case "itemperstatus":
+    $sql="select count(*) as TotalCount, ".
+         " statustypes.statusdesc as StatusType  ".
+         " FROM items,agents,statustypes ".
+         " WHERE agents.id=items.manufacturerid AND items.status=statustypes.id GROUP BY status order by totalcount desc;";
+    $editlnk="$scriptname?action=editstatus";
+    $graph['type']="pie";
+    $graph['colx']="StatusType";
+    $graph['coly']="TotalCount";
+    $graph['limit']=15;
+  break;
+  
+  
+  case "itemperstatus":
+    $sql="select count(*) as TotalCount, ".
+         " typedesc as type, statustypes.statusdesc as StatusType  ".
+         " FROM items,agents,itemtypes,statustypes ".
+         " WHERE itemtypes.id=items.itemtypeid AND items.status=statustypes.id GROUP BY status order by totalcount,typedesc desc;";
+    $editlnk="$scriptname?action=editstatus";
+    $graph['type']="pie";
+    $graph['colx']="StatusType";
+    $graph['coly']="TotalCount";
+    $graph['limit']=15;
+  break;
+  
+  case "itemperstatus":
+    $sql="select count(*) as TotalCount, ".
+         " typedesc as Type, statustypes.statusdesc as StatusType  ".
+         " FROM items,agents,itemtypes,statustypes ".
+         " WHERE items.itemtypeid=itemtypes.id AND items.status=statustypes.id GROUP BY status order by totalcount desc;";
+    $editlnk="$scriptname?action=editstatus";
+    $graph['type']="pie";
+    $graph['colx']="StatusType";
+    $graph['coly']="TotalCount";
+    $graph['limit']=15;
+  break;
